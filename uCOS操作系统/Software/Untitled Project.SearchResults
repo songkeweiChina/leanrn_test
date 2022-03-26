@@ -1,0 +1,5 @@
+---- OSMboxQuery Matches (4 in 3 files) ----
+Os_cfg_r.h (ucos-ii\source):#define OS_MBOX_QUERY_EN          1u   /*     Include code for OSMboxQuery()                           */
+Os_mbox.c (ucos-ii\source):INT8U  OSMboxQuery (OS_EVENT      *pevent,
+Ucos_ii.h (ucos-ii\source):INT8U         OSMboxQuery             (OS_EVENT        *pevent,
+Ucos_ii.h (ucos-ii\source):    #error  "OS_CFG.H, Missing OS_MBOX_QUERY_EN: Include code for OSMboxQuery()"
