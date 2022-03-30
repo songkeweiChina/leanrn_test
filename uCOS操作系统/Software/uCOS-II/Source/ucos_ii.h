@@ -72,6 +72,7 @@ extern "C" {
 
 #define  OS_PRIO_SELF                0xFFu              /*删除任务优先级置FF*//* Indicate SELF priority                      */
 
+/*根据有没有统计任务，配置系统任务数*/
 #if OS_TASK_STAT_EN > 0u								/*有没有统计任务*/
 #define  OS_N_SYS_TASKS                 2u              /*系统任务数*/
 #else
@@ -93,7 +94,7 @@ extern "C" {
 #define  OS_TASK_STAT_ID            65534u
 #define  OS_TASK_TMR_ID             65533u
 
-#define  OS_EVENT_EN           /*使用事件操作*/(((OS_Q_EN > 0u) && (OS_MAX_QS > 0u)) || (OS_MBOX_EN > 0u) || (OS_SEM_EN > 0u) || (OS_MUTEX_EN > 0u))
+#define  OS_EVENT_EN           /*使用事件控制块操作*/(((OS_Q_EN > 0u) && (OS_MAX_QS > 0u)) || (OS_MBOX_EN > 0u) || (OS_SEM_EN > 0u) || (OS_MUTEX_EN > 0u))
 
 #define  OS_TCB_RESERVED        ((OS_TCB *)1)
 
@@ -377,14 +378,13 @@ typedef struct os_event
 
 #if (OS_FLAG_EN > 0u) && (OS_MAX_FLAGS > 0u)
 
-#if OS_FLAGS_NBITS == 8u                    /* Determine the size of OS_FLAGS (8, 16 or 32 bits)       */
+/*配置事件标志大小*/
+#if OS_FLAGS_NBITS == 8u
 typedef  INT8U    OS_FLAGS;
 #endif
-
 #if OS_FLAGS_NBITS == 16u
 typedef  INT16U   OS_FLAGS;
 #endif
-
 #if OS_FLAGS_NBITS == 32u
 typedef  INT32U   OS_FLAGS;
 #endif

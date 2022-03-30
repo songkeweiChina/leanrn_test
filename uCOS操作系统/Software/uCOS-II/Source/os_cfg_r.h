@@ -37,13 +37,13 @@
 #define OS_EVENT_MULTI_EN         1u   /*允许任务等待多事件*//* Include code for OSEventPendMulti()                          */
 #define OS_EVENT_NAME_EN          1u   /* Enable names for Sem, Mutex, Mbox and Q                      */
 
-#define OS_LOWEST_PRIO           63u   /*最低优先级的任务优先级*/
+#define OS_LOWEST_PRIO           63u   /*最低优先级的任务优先级，也就是最大任务的个数*/
                                        /* ... MUST NEVER be higher than 254!                           */
 
 #define OS_MAX_EVENTS            10u   /* Max. number of event control blocks in your application      */
-#define OS_MAX_FLAGS              5u   /* Max. number of Event Flag Groups    in your application      */
+#define OS_MAX_FLAGS              5u   /*事件标志组的最大数量*/
 #define OS_MAX_MEM_PART           5u   /* Max. number of memory partitions                             */
-#define OS_MAX_QS                 4u   /* Max. number of queue control blocks in your application      */
+#define OS_MAX_QS                 4u   /*队列控制块的最大数量*/
 #define OS_MAX_TASKS             20u   /*最多的用户任务数*/
 
 #define OS_SCHED_LOCK_EN          1u   /* Include code for OSSchedLock() and OSSchedUnlock()           */
@@ -64,28 +64,28 @@
 
 #define OS_TASK_CREATE_EXT_EN     1u   /*是否使用扩展功能*/																							/*     Include code for OSTaskCreateExt()                       */
 #define OS_TASK_DEL_EN            1u   /*是否允许删除任务*/																										/*     Include code for OSTaskDel()                             */
-#define OS_TASK_NAME_EN           1u   /*     Enable task names                                        */
-#define OS_TASK_PROFILE_EN        1u   /*     Include variables in OS_TCB for profiling                */
+#define OS_TASK_NAME_EN           1u   /*是否允许使用任务名*/
+#define OS_TASK_PROFILE_EN        1u   /*是否使用TCB中的用于分析的参数*/
 #define OS_TASK_QUERY_EN          1u   /*     Include code for OSTaskQuery()                           */
-#define OS_TASK_REG_TBL_SIZE      1u   /*     Size of task variables array (#of INT32U entries)        */
-#define OS_TASK_STAT_EN           1u   /*     Enable (1) or Disable(0) the statistics task             */
+#define OS_TASK_REG_TBL_SIZE      1u   /*是否使用任务注册表*/
+#define OS_TASK_STAT_EN           1u   /*是否开启统计任务*/
 #define OS_TASK_STAT_STK_CHK_EN   1u   /*     Check task stacks from statistic task                    */
 #define OS_TASK_SUSPEND_EN        1u   /*     Include code for OSTaskSuspend() and OSTaskResume()      */
 #define OS_TASK_SW_HOOK_EN        1u   /*     Include code for OSTaskSwHook()                          */
 
 
                                        /* ----------------------- EVENT FLAGS ------------------------ */
-#define OS_FLAG_EN                1u   /* Enable (1) or Disable (0) code generation for EVENT FLAGS    */
+#define OS_FLAG_EN                1u   /*使用事件的标志*/
 #define OS_FLAG_ACCEPT_EN         1u   /*     Include code for OSFlagAccept()                          */
 #define OS_FLAG_DEL_EN            1u   /*     Include code for OSFlagDel()                             */
 #define OS_FLAG_NAME_EN           1u   /*     Enable names for event flag group                        */
 #define OS_FLAG_QUERY_EN          1u   /*     Include code for OSFlagQuery()                           */
 #define OS_FLAG_WAIT_CLR_EN       1u   /* Include code for Wait on Clear EVENT FLAGS                   */
-#define OS_FLAGS_NBITS           16u   /* Size in #bits of OS_FLAGS data type (8, 16 or 32)            */
+#define OS_FLAGS_NBITS           16u   /*配置事件标志大小*/
 
 
                                        /* -------------------- MESSAGE MAILBOXES --------------------- */
-#define OS_MBOX_EN                1u   /* Enable (1) or Disable (0) code generation for MAILBOXES      */
+#define OS_MBOX_EN                1u   /*是否使用邮箱*/
 #define OS_MBOX_ACCEPT_EN         1u   /*     Include code for OSMboxAccept()                          */
 #define OS_MBOX_DEL_EN            1u   /*     Include code for OSMboxDel()                             */
 #define OS_MBOX_PEND_ABORT_EN     1u   /*     Include code for OSMboxPendAbort()                       */
@@ -101,7 +101,7 @@
 
 
                                        /* ---------------- MUTUAL EXCLUSION SEMAPHORES --------------- */
-#define OS_MUTEX_EN               1u   /* Enable (1) or Disable (0) code generation for MUTEX          */
+#define OS_MUTEX_EN               1u   /*是否使用互斥锁*/
 #define OS_MUTEX_ACCEPT_EN        1u   /*     Include code for OSMutexAccept()                         */
 #define OS_MUTEX_DEL_EN           1u   /*     Include code for OSMutexDel()                            */
 #define OS_MUTEX_QUERY_EN         1u   /*     Include code for OSMutexQuery()                          */
@@ -120,7 +120,7 @@
 
 
                                        /* ------------------------ SEMAPHORES ------------------------ */
-#define OS_SEM_EN                 1u   /* Enable (1) or Disable (0) code generation for SEMAPHORES     */
+#define OS_SEM_EN                 1u   /*是否使用信号量*/
 #define OS_SEM_ACCEPT_EN          1u   /*    Include code for OSSemAccept()                            */
 #define OS_SEM_DEL_EN             1u   /*    Include code for OSSemDel()                               */
 #define OS_SEM_PEND_ABORT_EN      1u   /*    Include code for OSSemPendAbort()                         */
