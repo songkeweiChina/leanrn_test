@@ -1,8 +1,25 @@
----- OSTCBTbl Matches (8 in 3 files) ----
-Os_core.c (ucos-ii\source):    OS_MemClr((INT8U *)&OSTCBTbl[0],     sizeof(OSTCBTbl));      /*清空所有的任务控制块*/
-Os_core.c (ucos-ii\source):        ptcb1   = &OSTCBTbl[ix];
-Os_core.c (ucos-ii\source):        ptcb2   = &OSTCBTbl[ix_next];
-Os_core.c (ucos-ii\source):    ptcb1                   = &OSTCBTbl[ix];
-Os_core.c (ucos-ii\source):    OSTCBFreeList           = &OSTCBTbl[0];						 /*空闲链表指针指向表头*/
-Os_dbg_r.c (ucos-ii\source):                          + sizeof(OSTCBTbl);
-Ucos_ii.h (ucos-ii\source):OS_EXT  OS_TCB            OSTCBTbl[OS_MAX_TASKS + OS_N_SYS_TASKS];		/*任务控制块的结构体数组，实体化一共有多少任务控制块*/
+---- OS_EVENT_EN Matches (24 in 4 files) ----
+Os_core.c (ucos-ii\source):#if (OS_EVENT_EN) && (OS_EVENT_NAME_EN > 0u)
+Os_core.c (ucos-ii\source):#if (OS_EVENT_EN) && (OS_EVENT_NAME_EN > 0u)
+Os_core.c (ucos-ii\source):#if ((OS_EVENT_EN) && (OS_EVENT_MULTI_EN > 0u))
+Os_core.c (ucos-ii\source):#if (OS_EVENT_EN)
+Os_core.c (ucos-ii\source):#if (OS_EVENT_EN)
+Os_core.c (ucos-ii\source):#if ((OS_EVENT_EN) && (OS_EVENT_MULTI_EN > 0u))
+Os_core.c (ucos-ii\source):#if (OS_EVENT_EN)
+Os_core.c (ucos-ii\source):#if ((OS_EVENT_EN) && (OS_EVENT_MULTI_EN > 0u))
+Os_core.c (ucos-ii\source):#if (OS_EVENT_EN)
+Os_core.c (ucos-ii\source):#if (OS_EVENT_EN) && (OS_MAX_EVENTS > 0u)
+Os_core.c (ucos-ii\source):#if (OS_EVENT_EN)
+Os_dbg_r.c (ucos-ii\source):INT16U  const  OSEventEn           = OS_EVENT_EN;
+Os_dbg_r.c (ucos-ii\source):#if (OS_EVENT_EN) && (OS_MAX_EVENTS > 0u)
+Os_dbg_r.c (ucos-ii\source):#if (OS_EVENT_EN) && (OS_MAX_EVENTS > 0u)
+Os_task.c (ucos-ii\source):#if (OS_EVENT_EN)
+Os_task.c (ucos-ii\source):#if (OS_EVENT_EN)
+Os_task.c (ucos-ii\source):#if (OS_EVENT_EN)										/*如果操作系统使用事件操作*/
+Ucos_ii.h (ucos-ii\source):#define  OS_EVENT_EN           /*使用事件控制块操作*/(((OS_Q_EN > 0u) && (OS_MAX_QS > 0u)) || (OS_MBOX_EN > 0u) || (OS_SEM_EN > 0u) || (OS_MUTEX_EN > 0u))
+Ucos_ii.h (ucos-ii\source):#if (OS_EVENT_EN) && (OS_MAX_EVENTS > 0u)
+Ucos_ii.h (ucos-ii\source):#if (OS_EVENT_EN)							/*如果使用消息队列，消息邮箱，或者信号量，那么任务就要用事件控制块，*/
+Ucos_ii.h (ucos-ii\source):#if (OS_EVENT_EN) && (OS_EVENT_MULTI_EN > 0u)
+Ucos_ii.h (ucos-ii\source):#if (OS_EVENT_EN) && (OS_MAX_EVENTS > 0u)
+Ucos_ii.h (ucos-ii\source):#if (OS_EVENT_EN)
+Ucos_ii.h (ucos-ii\source):#if (OS_EVENT_EN)

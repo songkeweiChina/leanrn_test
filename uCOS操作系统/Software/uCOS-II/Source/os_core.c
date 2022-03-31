@@ -1970,36 +1970,40 @@ INT8U  OS_TCBInit (INT8U    prio,		/*被创建任务的优先级*/
         ptcb->OSTCBBitY          = (OS_PRIO)(1uL << ptcb->OSTCBY);	/*输入优先级对应表中的位置*/
         ptcb->OSTCBBitX          = (OS_PRIO)(1uL << ptcb->OSTCBX);
 
-#if (OS_EVENT_EN)
-        ptcb->OSTCBEventPtr      = (OS_EVENT  *)0;         /* Task is not pending on an  event         */
-#if (OS_EVENT_MULTI_EN > 0u)
-        ptcb->OSTCBEventMultiPtr = (OS_EVENT **)0;         /* Task is not pending on any events        */
+
+#if (OS_EVENT_EN)/*如果使用事件控制快*/
+        ptcb->OSTCBEventPtr      = (OS_EVENT  *)0;					/*初始化ECB指针*/
+#if (OS_EVENT_MULTI_EN > 0u)/*如果使用多事件*/
+        ptcb->OSTCBEventMultiPtr = (OS_EVENT **)0;					/*初始化多事件指针*/
 #endif
 #endif
 
+
+
 #if (OS_FLAG_EN > 0u) && (OS_MAX_FLAGS > 0u) && (OS_TASK_DEL_EN > 0u)
-        ptcb->OSTCBFlagNode  = (OS_FLAG_NODE *)0;          /* Task is not pending on an event flag     */
+        ptcb->OSTCBFlagNode  = (OS_FLAG_NODE *)0;					/*初始化事件标志节点*/
 #endif
 
 #if (OS_MBOX_EN > 0u) || ((OS_Q_EN > 0u) && (OS_MAX_QS > 0u))
-        ptcb->OSTCBMsg       = (void *)0;                  /* No message received                      */
+        ptcb->OSTCBMsg       = (void *)0;							/*初始化消息地址*/
 #endif
 
-#if OS_TASK_PROFILE_EN > 0u
-        ptcb->OSTCBCtxSwCtr    = 0uL;                      /* Initialize profiling variables           */
-        ptcb->OSTCBCyclesStart = 0uL;
-        ptcb->OSTCBCyclesTot   = 0uL;
-        ptcb->OSTCBStkBase     = (OS_STK *)0;
-        ptcb->OSTCBStkUsed     = 0uL;
+#if OS_TASK_PROFILE_EN > 0u                                         /*如果使用ECB参数*/
+        ptcb->OSTCBCtxSwCtr    = 0uL;                               /*切换到该任务的次数*/
+        ptcb->OSTCBCyclesStart = 0uL;                               /*任务运行的总的时间周期*/
+        ptcb->OSTCBCyclesTot   = 0uL;                               /* Snapshot of cycle counter at start of task resumption   */
+        ptcb->OSTCBStkBase     = (OS_STK *)0;                       /*任务堆栈的起始地址*/
+        ptcb->OSTCBStkUsed     = 0uL;                               /*任务堆栈中使用过的空间数*/
 #endif
 
 #if OS_TASK_NAME_EN > 0u
         ptcb->OSTCBTaskName    = (INT8U *)(void *)"?";
 #endif
 
-#if OS_TASK_REG_TBL_SIZE > 0u                              /* Initialize the task variables            */
-        for (i = 0u; i < OS_TASK_REG_TBL_SIZE; i++) {
-            ptcb->OSTCBRegTbl[i] = 0u;
+#if OS_TASK_REG_TBL_SIZE > 0u										/*是否使用任务注册表*/
+        for (i = 0u; i < OS_TASK_REG_TBL_SIZE; i++)
+		{
+            ptcb->OSTCBRegTbl[i] = 0u;								/*初始化任务注册表*/
         }
 #endif
 
@@ -2008,8 +2012,8 @@ INT8U  OS_TCBInit (INT8U    prio,		/*被创建任务的优先级*/
 
 		OS_ENTER_CRITICAL();							   /*进入临界区*/
         OSTCBPrioTbl[prio] = ptcb;						   /*把初始化任务控制块的地址给任务优先级指针表*/
-		/*将当前控制块添加到就绪表最前面*/
-        ptcb->OSTCBNext    = OSTCBList;                    
+		
+        ptcb->OSTCBNext    = OSTCBList;						/*将当前控制块添加到就绪表最前面*/                 
         ptcb->OSTCBPrev    = (OS_TCB *)0;
         if (OSTCBList != (OS_TCB *)0) 
 		{

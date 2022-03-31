@@ -82,6 +82,7 @@ extern "C" {
 #define  OS_TASK_STAT_PRIO  (OS_LOWEST_PRIO - 1u)       /* Statistic task priority                     */
 #define  OS_TASK_IDLE_PRIO  (OS_LOWEST_PRIO)            /*空闲任务的优先级*/
 
+/*根据任务数量配置事件等待组和表的类型*/
 #if OS_LOWEST_PRIO <= 63u
 #define  OS_EVENT_TBL_SIZE ((OS_LOWEST_PRIO) / 8u + 1u) /* Size of event table                         */
 #define  OS_RDY_TBL_SIZE   ((OS_LOWEST_PRIO) / 8u + 1u) /* Size of ready table                         */
@@ -98,12 +99,7 @@ extern "C" {
 
 #define  OS_TCB_RESERVED        ((OS_TCB *)1)
 
-/*$PAGE*/
-/*
-*********************************************************************************************************
-*                              TASK STATUS (Bit definition for OSTCBStat)
-*********************************************************************************************************
-*/
+/*TASK的状态*/
 #define  OS_STAT_RDY                 0x00u  /*就绪态，任务未等待事件且未挂起*/
 #define  OS_STAT_SEM                 0x01u  /*，任务等待信号量*/														/* Pending on semaphore                                    */
 #define  OS_STAT_MBOX                0x02u  /*，任务等待邮箱*/															/* Pending on mailbox                                      */
@@ -115,11 +111,9 @@ extern "C" {
 
 #define  OS_STAT_PEND_ANY                   /*等待时间结合体*/(OS_STAT_SEM | OS_STAT_MBOX | OS_STAT_Q | OS_STAT_MUTEX | OS_STAT_FLAG)
 
-/*
-*********************************************************************************************************
-*                           TASK PEND STATUS (Status codes for OSTCBStatPend)
-*********************************************************************************************************
-*/
+
+
+/*Task Pend状态*/
 #define  OS_STAT_PEND_OK                0u/*事件发生了*/
 #define  OS_STAT_PEND_TO                1u/*事件等待失败了*/
 #define  OS_STAT_PEND_ABORT             2u/*事件超时了*/
@@ -1280,6 +1274,7 @@ void          OS_TaskStkClr           (OS_STK          *pbos,
 void          OS_TaskStatStkChk       (void);
 #endif
 
+/*声明TCB初始化函数*/
 INT8U         OS_TCBInit              (INT8U            prio,
                                        OS_STK          *ptos,
                                        OS_STK          *pbos,
@@ -1324,7 +1319,7 @@ OS_STK       *OSTaskStkInit           (void           (*task)(void *p_arg),
 void          OSTaskSwHook            (void);
 #endif
 
-void          OSTCBInitHook           (OS_TCB          *ptcb);
+void          OSTCBInitHook           (OS_TCB          *ptcb);/*空函数*/
 
 #if OS_TIME_TICK_HOOK_EN > 0u
 void          OSTimeTickHook          (void);

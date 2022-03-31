@@ -21,3 +21,6 @@ typedef unsigned char INT8U;
 #define OS_LOWEST_PRIO           63u   /*最低优先级的任务优先级，也就是最大任务的个数*/
 #define OS_MAX_TASKS             20u   /*最多的用户任务数*/
 #define OS_TASK_STAT_EN           1u   /*是否开启统计任务*/
+#define TASK_STK_SIZE           512U   /*任务堆栈大小*/
+
+
