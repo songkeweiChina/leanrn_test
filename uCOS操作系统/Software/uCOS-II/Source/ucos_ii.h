@@ -206,10 +206,10 @@ extern "C" {
 *                                 TASK OPTIONS (see OSTaskCreateExt())
 *********************************************************************************************************
 */
-#define  OS_TASK_OPT_NONE          0x0000u  /*啥也没选*/
-#define  OS_TASK_OPT_STK_CHK       0x0001u  /*进行堆栈检查*/
-#define  OS_TASK_OPT_STK_CLR       0x0002u  /*创建任务时清空堆栈*/
-#define  OS_TASK_OPT_SAVE_FP       0x0004u  /*保存浮点寄存器内容*/
+#define  OS_TASK_OPT_NONE          0x0000u  /*啥也没选 */
+#define  OS_TASK_OPT_STK_CHK       0x0001u  /*进行堆栈检查 */
+#define  OS_TASK_OPT_STK_CLR       0x0002u  /*创建任务时清空堆栈 */
+#define  OS_TASK_OPT_SAVE_FP       0x0004u  /*保存浮点寄存器内容 */
 
 /*
 *********************************************************************************************************
@@ -641,8 +641,8 @@ typedef  struct  os_tmr_wheel {
 OS_EXT  INT32U            OSCtxSwCtr;               /*任务切换次数*//* Counter of number of context switches           */
 
 #if (OS_EVENT_EN) && (OS_MAX_EVENTS > 0u)
-OS_EXT  OS_EVENT         *OSEventFreeList;          /*事件空闲链表指针*//* Pointer to list of free EVENT control blocks    */
-OS_EXT  OS_EVENT          OSEventTbl[OS_MAX_EVENTS];/*事件控制块的实体*//* Table of EVENT control blocks                   */
+OS_EXT  OS_EVENT         *OSEventFreeList;          /*事件空闲链表指针 *//* Pointer to list of free EVENT control blocks    */
+OS_EXT  OS_EVENT          OSEventTbl[OS_MAX_EVENTS];/*事件控制块的实体 *//* Table of EVENT control blocks                   */
 #endif
 
 #if (OS_FLAG_EN > 0u) && (OS_MAX_FLAGS > 0u)

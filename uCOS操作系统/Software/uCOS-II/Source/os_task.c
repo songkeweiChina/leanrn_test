@@ -205,9 +205,9 @@ INT8U  OSTaskChangePrio (INT8U  oldprio,
 /*没扩展功能创建任务*/
 #if OS_TASK_CREATE_EN > 0u
 INT8U  OSTaskCreate (void   (*task)(void *p_arg),		/*任务代码地址*/
-                     void    *p_arg,					/*任务参数*/
-                     OS_STK  *ptos,						/*任务栈顶*/
-                     INT8U    prio)						/*任务的优先级*/
+                           void    *p_arg,					/*任务参数*/
+                           OS_STK  *ptos,						/*任务栈顶*/
+                           INT8U    prio)						/*任务的优先级*/
 {
     OS_STK    *psp;
     INT8U      err;
@@ -355,7 +355,7 @@ INT8U  OSTaskCreateExt (void   (*task)(void *p_arg),	/*任务代码地址*/
 #endif
 
 #if OS_ARG_CHK_EN > 0u
-    if (prio > OS_LOWEST_PRIO) {             /* Make sure priority is within allowable range           */
+    if (prio > OS_LOWEST_PRIO) {             /* 检查优先级           */
         return (OS_ERR_PRIO_INVALID);
     }
 #endif
@@ -426,7 +426,7 @@ INT8U  OSTaskCreateExt (void   (*task)(void *p_arg),	/*任务代码地址*/
 *                 being deleted.  The rest of the deletion would thus be able to be completed.
 *********************************************************************************************************
 */
-
+/*请求删除任务 */
 #if OS_TASK_DEL_EN > 0u
 INT8U  OSTaskDel (INT8U prio)
 {
@@ -810,6 +810,7 @@ void  OSTaskNameSet (INT8U   prio,
 *              OS_ERR_TASK_NOT_SUSPENDED  if the task to resume has not been suspended
 *********************************************************************************************************
 */
+
 #if OS_TASK_SUSPEND_EN > 0u
 INT8U  OSTaskResume (INT8U prio)
 {
@@ -865,6 +866,7 @@ INT8U  OSTaskResume (INT8U prio)
     return (OS_ERR_TASK_NOT_SUSPENDED);
 }
 #endif
+
 /*
 *********************************************************************************************************
 *                                             STACK CHECKING
@@ -967,6 +969,7 @@ INT8U  OSTaskStkChk (INT8U         prio,
 *              running when the event arrives.
 *********************************************************************************************************
 */
+
 #if OS_TASK_SUSPEND_EN > 0u
 INT8U  OSTaskSuspend (INT8U prio)
 {
@@ -1033,6 +1036,8 @@ INT8U  OSTaskSuspend (INT8U prio)
     return (OS_ERR_NONE);
 }
 #endif
+
+
 /*$PAGE*/
 /*
 *********************************************************************************************************

@@ -1,25 +1,5 @@
----- OS_EVENT_EN Matches (24 in 4 files) ----
-Os_core.c (ucos-ii\source):#if (OS_EVENT_EN) && (OS_EVENT_NAME_EN > 0u)
-Os_core.c (ucos-ii\source):#if (OS_EVENT_EN) && (OS_EVENT_NAME_EN > 0u)
-Os_core.c (ucos-ii\source):#if ((OS_EVENT_EN) && (OS_EVENT_MULTI_EN > 0u))
-Os_core.c (ucos-ii\source):#if (OS_EVENT_EN)
-Os_core.c (ucos-ii\source):#if (OS_EVENT_EN)
-Os_core.c (ucos-ii\source):#if ((OS_EVENT_EN) && (OS_EVENT_MULTI_EN > 0u))
-Os_core.c (ucos-ii\source):#if (OS_EVENT_EN)
-Os_core.c (ucos-ii\source):#if ((OS_EVENT_EN) && (OS_EVENT_MULTI_EN > 0u))
-Os_core.c (ucos-ii\source):#if (OS_EVENT_EN)
-Os_core.c (ucos-ii\source):#if (OS_EVENT_EN) && (OS_MAX_EVENTS > 0u)
-Os_core.c (ucos-ii\source):#if (OS_EVENT_EN)
-Os_dbg_r.c (ucos-ii\source):INT16U  const  OSEventEn           = OS_EVENT_EN;
-Os_dbg_r.c (ucos-ii\source):#if (OS_EVENT_EN) && (OS_MAX_EVENTS > 0u)
-Os_dbg_r.c (ucos-ii\source):#if (OS_EVENT_EN) && (OS_MAX_EVENTS > 0u)
-Os_task.c (ucos-ii\source):#if (OS_EVENT_EN)
-Os_task.c (ucos-ii\source):#if (OS_EVENT_EN)
-Os_task.c (ucos-ii\source):#if (OS_EVENT_EN)										/*如果操作系统使用事件操作*/
-Ucos_ii.h (ucos-ii\source):#define  OS_EVENT_EN           /*使用事件控制块操作*/(((OS_Q_EN > 0u) && (OS_MAX_QS > 0u)) || (OS_MBOX_EN > 0u) || (OS_SEM_EN > 0u) || (OS_MUTEX_EN > 0u))
-Ucos_ii.h (ucos-ii\source):#if (OS_EVENT_EN) && (OS_MAX_EVENTS > 0u)
-Ucos_ii.h (ucos-ii\source):#if (OS_EVENT_EN)							/*如果使用消息队列，消息邮箱，或者信号量，那么任务就要用事件控制块，*/
-Ucos_ii.h (ucos-ii\source):#if (OS_EVENT_EN) && (OS_EVENT_MULTI_EN > 0u)
-Ucos_ii.h (ucos-ii\source):#if (OS_EVENT_EN) && (OS_MAX_EVENTS > 0u)
-Ucos_ii.h (ucos-ii\source):#if (OS_EVENT_EN)
-Ucos_ii.h (ucos-ii\source):#if (OS_EVENT_EN)
+---- OSTimeTick Matches (4 in 3 files) ----
+Os_core.c (ucos-ii\source):void  OSTimeTick (void)
+Os_core.c (ucos-ii\source):	OSTimeTick();/*找到优先级最高的任务*/
+Os_task.c (ucos-ii\source):*                    c) by preventing OSTimeTick() from making the task ready to run.
+Ucos_ii.h (ucos-ii\source):void          OSTimeTick              (void);

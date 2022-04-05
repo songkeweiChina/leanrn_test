@@ -40,8 +40,8 @@
 #define OS_LOWEST_PRIO           63u   /*最低优先级的任务优先级，也就是最大任务的个数*/
                                        /* ... MUST NEVER be higher than 254!                           */
 
-#define OS_MAX_EVENTS            10u   /* Max. number of event control blocks in your application      */
-#define OS_MAX_FLAGS              5u   /*事件标志组的最大数量*/
+#define OS_MAX_EVENTS            10u   /*应用程序中最大事件控制块的数量  */
+#define OS_MAX_FLAGS              5u   /*事件标志组的最大数量 */
 #define OS_MAX_MEM_PART           5u   /* Max. number of memory partitions                             */
 #define OS_MAX_QS                 4u   /*队列控制块的最大数量*/
 #define OS_MAX_TASKS             20u   /*最多的用户任务数*/
@@ -70,7 +70,7 @@
 #define OS_TASK_REG_TBL_SIZE      1u   /*是否使用任务注册表*/
 #define OS_TASK_STAT_EN           1u   /*是否开启统计任务*/
 #define OS_TASK_STAT_STK_CHK_EN   1u   /*     Check task stacks from statistic task                    */
-#define OS_TASK_SUSPEND_EN        1u   /*     Include code for OSTaskSuspend() and OSTaskResume()      */
+#define OS_TASK_SUSPEND_EN        1u   /*是否允许挂起任务 */
 #define OS_TASK_SW_HOOK_EN        1u   /*     Include code for OSTaskSwHook()                          */
 
 
