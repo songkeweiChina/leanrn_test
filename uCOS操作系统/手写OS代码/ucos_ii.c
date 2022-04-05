@@ -44,7 +44,7 @@ void main()
     INT16U g = 1;
     OS_TCBInit(a,b,c,d,e,f,g);
     OSInit();
-    /*进度2.4*/
+    /*进度2.8*/
     printf("let's 挼 OS------\n");
 }
 

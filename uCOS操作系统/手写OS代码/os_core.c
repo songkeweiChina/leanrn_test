@@ -70,9 +70,13 @@ void  OS_EventTaskRemoveMulti(OS_TCB* ptcb,
 #endif
 void  OSTimeTick(void);               /*时间片调度函数 */
 void  OSTimeTickHook();               /*用户的钩子函数 */
-
-
-
+void  OS_SchedNew(void);              /*用来确定最高优先级的就绪任务 */
+void OS_TASK_SW();       /*进行任务切换 */
+void  OSIntExit(void);/*时钟中断中任务切换 */
+void OSIntCtxSw(void);
+void  OSStart(void);/*启动多任务 */
+void OSStartHighRdy(void);/*启动多任务 */
+void OSTaskSwHook(void);/*钩子函数 */
 
 
 
@@ -413,10 +417,7 @@ OS_STK* OSTaskStkInit(void           (*task)(void* p_arg),          /*任务代�
 }
 
 
-void OS_Sched()
-{
-    /*为了编译 */
-}
+
 
 
 /*在事件等待组和表中删除该任务 */
@@ -537,3 +538,128 @@ void  OSTimeTick(void)
         }
     }
 }
+
+
+/*用来确定最高优先级的就绪任务 */
+ void  OS_SchedNew(void)
+{
+#if OS_LOWEST_PRIO <= 63u                        /* See if we support up to 64 tasks                   */
+    INT8U   y;
+    y = OSUnMapTbl[OSRdyGrp];
+    OSPrioHighRdy = (INT8U)((y << 3u) + OSUnMapTbl[OSRdyTbl[y]]);
+#else                                            /* We support up to 256 tasks                         */
+    INT8U     y;
+    OS_PRIO* ptbl;
+    if ((OSRdyGrp & 0xFFu) != 0u) {
+        y = OSUnMapTbl[OSRdyGrp & 0xFFu];
+    }
+    else {
+        y = OSUnMapTbl[(OS_PRIO)(OSRdyGrp >> 8u) & 0xFFu] + 8u;
+    }
+    ptbl = &OSRdyTbl[y];
+    if ((*ptbl & 0xFFu) != 0u) {
+        OSPrioHighRdy = (INT8U)((y << 4u) + OSUnMapTbl[(*ptbl & 0xFFu)]);
+    }
+    else {
+        OSPrioHighRdy = (INT8U)((y << 4u) + OSUnMapTbl[(OS_PRIO)(*ptbl >> 8u) & 0xFFu] + 8u);
+    }
+#endif
+}
+
+ void OS_Sched()             /*调度函数 */
+ {
+     OS_ENTER_CRITICAL();
+     if (OSIntNesting == 0u)								/*调度任务时必须没在中断里 */
+     {
+         if (OSLockNesting == 0u)						/*调度器没有上锁 */
+         {
+             OS_SchedNew();								/*找到最高优先级的任务*/
+             OSTCBHighRdy = OSTCBPrioTbl[OSPrioHighRdy];	/*获取优先级最高任务控制块地址 */
+             if (OSPrioHighRdy != OSPrioCur)				/*如果不是当前任务，就要进行切换 */
+             {
+#if OS_TASK_PROFILE_EN > 0u
+                 OSTCBHighRdy->OSTCBCtxSwCtr++;			/*任务调度次数++ */
+#endif
+                 OSCtxSwCtr++;							/*操作系统切换任务次数++ */
+                 OS_TASK_SW();							/*进行任务切换 */
+             }
+         }
+     }
+     OS_EXIT_CRITICAL();
+ }
+
+
+ void OS_TASK_SW()       /*进行任务切换 */
+ {
+     /*为了编译 */
+ }
+
+
+ /*时钟中断中任务切换 */
+ void  OSIntExit(void)
+ {
+     if (OSRunning == OS_TRUE)								/*多任务的时候才能调度 */
+     {
+         OS_ENTER_CRITICAL();
+         if (OSIntNesting > 0u)								/*如果当前有中断嵌套 */
+         {
+             OSIntNesting--;									/*退出的时候嵌套数-1 */
+         }
+         if (OSIntNesting == 0u)								/*当前没中断嵌套 */
+         {
+             if (OSLockNesting == 0u)						/*调度器未加锁 */
+             {
+                 OS_SchedNew();								/*确定最高优先级的就绪任务的 */
+                 OSTCBHighRdy = OSTCBPrioTbl[OSPrioHighRdy];	/*获取优先级最高的任务控制块 */
+                 if (OSPrioHighRdy != OSPrioCur)				/*最高优先级的是不是当前任务 */
+                 {
+#if OS_TASK_PROFILE_EN > 0u
+                     OSTCBHighRdy->OSTCBCtxSwCtr++;
+#endif
+                     OSCtxSwCtr++;
+                     OSIntCtxSw();							/*切换任务 */
+                 }
+             }
+         }
+         OS_EXIT_CRITICAL();
+     }
+ }
+
+ void OSIntCtxSw(void)/*切换任务 */
+ {
+     /*入栈存CPU值 */
+     /*全局变量赋值 */
+     /*出栈恢复CPU值 */
+ }
+
+ void  OSStart(void)/*启动多任务 */
+ {
+     if (OSRunning == OS_FALSE)						/*如果系统没有启动多任务 */
+     {
+         OS_SchedNew();								/*找到优先级最高的任务 */
+         OSPrioCur = OSPrioHighRdy;
+         OSTCBHighRdy = OSTCBPrioTbl[OSPrioHighRdy];
+         OSTCBCur = OSTCBHighRdy;
+         OSStartHighRdy();							/*启动多任务 */
+     }
+ }
+
+
+ void OSStartHighRdy(void)/*启动多任务 */
+ {
+     OSTaskSwHook();					/*钩子函数 */
+     OSRunning = OS_TRUE;			/*标志位变成启动多任务 */
+     //_asm
+     //{
+         /*任务栈地址赋值给ebx*/
+         /*esp指向任务堆栈*/
+         /*恢复所有通用寄存器*/
+         /*恢复标志寄存器*/
+         /*在堆栈中取出任务地址并开始任务 */
+     //}
+ }
+
+ void OSTaskSwHook(void)/*钩子函数 */
+ {
+     /*钩子函数 */;
+ }

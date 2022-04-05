@@ -393,3 +393,10 @@ extern INT8U  OSTaskResume(INT8U prio);       /*恢复挂起任务 */
 #endif
 extern void  OSTimeTick(void);               /*时间片调度函数 */
 extern void  OSTimeTickHook();               /*用户的钩子函数 */
+extern void  OS_SchedNew(void);              /*用来确定最高优先级的就绪任务 */
+extern void OS_TASK_SW();       /*进行任务切换 */
+extern void  OSIntExit(void);/*时钟中断中任务切换 */
+extern void OSIntCtxSw(void);/*切换任务*/
+extern void  OSStart(void);/*启动多任务 */
+extern void OSStartHighRdy(void);/*启动多任务 */
+extern void OSTaskSwHook(void);/*钩子函数 */
