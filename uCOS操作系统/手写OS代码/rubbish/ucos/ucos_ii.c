@@ -8,7 +8,6 @@
     OS_PRIO      OSRdyGrp;                        /*任务就绪组 */
     OS_PRIO      OSRdyTbl[OS_RDY_TBL_SIZE];       /*任务就绪表 */
     INT8U             OSTaskCtr;                       /*当前任务数 */
-    INT32U            OSTime;                   /*当前系统时间，调度计数器 */
     INT32U            OSCtxSwCtr;               /*任务切换次数 */
     INT8U             OSIntNesting;             /*中断嵌套计数 */
     INT8U             OSLockNesting;            /*调度锁计数 */
@@ -26,7 +25,14 @@
     OS_EVENT*         OSEventFreeList;          /*事件空闲链表指针 *//* Pointer to list of free EVENT control blocks    */
     OS_EVENT          OSEventTbl[OS_MAX_EVENTS];/*事件控制块的实体 *//* Table of EVENT control blocks                   */
 #endif
-
+#if OS_TASK_STAT_EN > 0u
+    INT8U             OSCPUUsage;               /*CPU使用率 */						/* Percentage of CPU used                          */
+    INT32U            OSIdleCtrMax;             /*最大空闲计数值 */					/* Max. value that idle ctr can take in 1 sec.     */
+    INT32U            OSIdleCtrRun;             /*1秒内空闲计数值 */					/* Val. reached by idle ctr at run time in 1 sec.  */
+    INT8U             OSStatRdy;                /*统计任务准备状态 */				/* Flag indicating that the statistic task is rdy  */
+    OS_STK            OSTaskStatStk[OS_TASK_STAT_STK_SIZE];      /*统计任务栈 */		/* Statistics task stack          */
+#endif
+    INT8U             FlagEn;                   /*是否在临界区 */
 
 
 
@@ -44,7 +50,7 @@ void main()
     INT16U g = 1;
     OS_TCBInit(a,b,c,d,e,f,g);
     OSInit();
-    /*进度2.8*/
+    /*进度3.2*/
     printf("let's 挼 OS------\n");
 }
 

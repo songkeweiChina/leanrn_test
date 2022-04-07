@@ -1,0 +1,25 @@
+﻿  os_flag.c
+C:\Users\kewei.song\Desktop\rubbish\ucos\ucos\ucos_ii.h(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+C:\Users\kewei.song\Desktop\rubbish\ucos\ucos\os_cfg_r.h(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+  os_task.c
+C:\Users\kewei.song\Desktop\rubbish\ucos\ucos\ucos_ii.h(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+C:\Users\kewei.song\Desktop\rubbish\ucos\ucos\os_cfg_r.h(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+C:\Users\kewei.song\Documents\Virtual Machines\public\leanrn_test\uCOS操作系统\手写OS代码\rubbish\ucos\ucos\os_task.c(49,1): warning C4133: “初始化”: 从“OS_TCB *”到“OS_STK *”的类型不兼容
+  os_time.c
+C:\Users\kewei.song\Desktop\rubbish\ucos\ucos\ucos_ii.h(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+C:\Users\kewei.song\Desktop\rubbish\ucos\ucos\os_cfg_r.h(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+  ucos_ii.c
+C:\Users\kewei.song\Desktop\rubbish\ucos\ucos\ucos_ii.h(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+C:\Users\kewei.song\Desktop\rubbish\ucos\ucos\os_cfg_r.h(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+C:\Users\kewei.song\Documents\Virtual Machines\public\leanrn_test\uCOS操作系统\手写OS代码\rubbish\ucos\ucos_ii.c(51,19): warning C4047: “函数”:“OS_STK *”与“OS_STK”的间接级别不同
+C:\Users\kewei.song\Documents\Virtual Machines\public\leanrn_test\uCOS操作系统\手写OS代码\rubbish\ucos\ucos_ii.c(51,18): warning C4024: “OS_TCBInit”: 形参和实参 2 的类型不同
+C:\Users\kewei.song\Documents\Virtual Machines\public\leanrn_test\uCOS操作系统\手写OS代码\rubbish\ucos\ucos_ii.c(51,21): warning C4047: “函数”:“OS_STK *”与“OS_STK”的间接级别不同
+C:\Users\kewei.song\Documents\Virtual Machines\public\leanrn_test\uCOS操作系统\手写OS代码\rubbish\ucos\ucos_ii.c(51,20): warning C4024: “OS_TCBInit”: 形参和实参 3 的类型不同
+  os_core.c
+C:\Users\kewei.song\Documents\Virtual Machines\public\leanrn_test\uCOS操作系统\手写OS代码\rubbish\ucos\ucos\os_core.c(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+C:\Users\kewei.song\Documents\Virtual Machines\public\leanrn_test\uCOS操作系统\手写OS代码\rubbish\ucos\ucos\ucos_ii.h(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+C:\Users\kewei.song\Documents\Virtual Machines\public\leanrn_test\uCOS操作系统\手写OS代码\rubbish\ucos\ucos\os_cfg_r.h(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+C:\Users\kewei.song\Documents\Virtual Machines\public\leanrn_test\uCOS操作系统\手写OS代码\rubbish\ucos\ucos\os_core.c(761,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+  正在生成代码...
+C:\Users\kewei.song\Documents\Virtual Machines\public\leanrn_test\uCOS操作系统\手写OS代码\rubbish\ucos\ucos\os_core.c(443): warning C4716: “OSTaskStkInit”: 必须返回一个值
+  ucos.vcxproj -> C:\Users\kewei.song\Documents\Virtual Machines\public\leanrn_test\uCOS操作系统\手写OS代码\rubbish\ucos\x64\Debug\ucos.exe

@@ -5,7 +5,7 @@ typedef unsigned char INT8U;
 
 
 #define OS_TASK_SUSPEND_EN        1u   /*是否允许挂起任务 */
-#define OS_TASK_CREATE_EXT_EN     1u   /*是否使用扩展功能 */
+#define OS_TASK_CREATE_EXT_EN     0u   /*是否使用扩展功能 */
 #define OS_Q_EN                   1u   /*使用队列 */
 #define OS_MBOX_EN                1u   /*是否使用邮箱 */
 #define OS_SEM_EN                 1u   /*是否使用信号量 */
@@ -56,5 +56,12 @@ typedef unsigned char INT8U;
 #define OS_APP_HOOKS_EN           1u   /* Application-defined hooks are called from the uC/OS-II hooks */
 #define OS_ARG_CHK_EN             1u   /*是否参数检查 */
 #define OS_CPU_HOOKS_EN           1u   /* uC/OS-II hooks are found in the processor port files         */
-#define OS_TASK_STAT_STK_CHK_EN   1u   /*     Check task stacks from statistic task                    */
+#define OS_TASK_STAT_STK_CHK_EN   0u   /*     Check task stacks from statistic task                    */
 #define OS_STK_GROWTH             1u   /*栈的生长方向 */
+
+                                       /* --------------------- TASK STACK SIZE ---------------------- */
+#define OS_TASK_TMR_STK_SIZE    128u   /* Timer      task stack size (# of OS_STK wide entries)        */
+#define OS_TASK_STAT_STK_SIZE   128u   /* Statistics task stack size (# of OS_STK wide entries)        */
+#define OS_TASK_IDLE_STK_SIZE   128u   /* Idle       task stack size (# of OS_STK wide entries)        */
+#define OS_TICK_STEP_EN           0u   /* Enable tick stepping feature for uC/OS-View                  */
+#define OS_TICKS_PER_SEC        100u   /*每秒时钟中断发生的次数 *//* Set the number of ticks in one second                        */

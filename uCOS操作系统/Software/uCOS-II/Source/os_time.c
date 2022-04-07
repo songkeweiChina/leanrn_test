@@ -40,6 +40,7 @@
 * Returns    : none
 *********************************************************************************************************
 */
+
 /*任务延时函数*/
 void  OSTimeDly (INT32U ticks)
 {
@@ -69,6 +70,7 @@ void  OSTimeDly (INT32U ticks)
         OS_Sched();											/*调度一下*/
     }
 }
+
 /*$PAGE*/
 /*
 *********************************************************************************************************
@@ -95,6 +97,7 @@ void  OSTimeDly (INT32U ticks)
 *              set to 0.  The actual delay is rounded to the nearest tick.
 *********************************************************************************************************
 */
+
 /*任务按秒延迟函数*/
 #if OS_TIME_DLY_HMSM_EN > 0u
 INT8U  OSTimeDlyHMSM (INT8U   hours,
@@ -164,6 +167,7 @@ INT8U  OSTimeDlyHMSM (INT8U   hours,
 *              OS_ERR_TASK_NOT_EXIST     The desired task has not been created or has been assigned to a Mutex.
 *********************************************************************************************************
 */
+
 /*延时恢复函数*/
 #if OS_TIME_DLY_RESUME_EN > 0u
 INT8U  OSTimeDlyResume (INT8U prio)

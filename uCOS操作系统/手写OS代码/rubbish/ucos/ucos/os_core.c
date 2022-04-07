@@ -77,6 +77,32 @@ void OSIntCtxSw(void);
 void  OSStart(void);/*启动多任务 */
 void OSStartHighRdy(void);/*启动多任务 */
 void OSTaskSwHook(void);/*钩子函数 */
+void  OS_TaskIdle(void* p_arg); /*空闲任务 */
+void  OSTaskIdleHook(void);/*钩子函数 */
+#if OS_TASK_STAT_EN > 0u
+void  OSStatInit(void); /*统计任务的初始化 */
+#endif
+#if OS_TASK_STAT_EN > 0u
+void          OS_TaskStat(void* p_arg);			/*统计任务代码*/
+#endif
+void OSTaskStatHook();/*钩子函数 */
+void OSIntEnter(void);/*进入中断 */
+void OSTickISRuser();  /*时钟中断服务函数*/
+#if (OS_EVENT_EN)
+void  OS_EventWaitListInit(OS_EVENT* pevent); /*事件等待表初始化，也就是清一下ECB中的等待组+表 */
+#endif
+#if (OS_EVENT_EN)
+void  OS_EventTaskWait(OS_EVENT* pevent); /*设置事件等待函数，将任务在ECB中登记的函数，把任务在就绪组表中取消 */
+#endif
+
+#if (OS_EVENT_EN)
+/*将等待事件的任务就绪 */
+INT8U  OS_EventTaskRdy(OS_EVENT* pevent,				/*ECB的指针 */
+    void* pmsg,				/*消息指针 */
+    INT8U      msk,					/*清除状态位的掩码 */
+    INT8U      pend_stat);			/*等待(pend)结束 */
+#endif
+
 
 
 
@@ -663,3 +689,216 @@ void  OSTimeTick(void)
  {
      /*钩子函数 */;
  }
+
+
+ /*空闲任务 */
+ void  OS_TaskIdle(void* p_arg)
+ {
+     p_arg = p_arg;								/*防止报错 */
+     for (;;)
+     {
+         OS_ENTER_CRITICAL();
+         OSIdleCtr++;							/*空闲计数器++ */
+         OS_EXIT_CRITICAL();
+         OSTaskIdleHook();						/*钩子函数 */
+     }
+ }
+
+ void OSTaskIdleHook(void)/*钩子函数 */
+ {
+     /*钩子函数 */;
+ }
+ void OSTaskStatHook()/*钩子函数 */
+ {
+     ;
+ }
+
+#if OS_TASK_STAT_EN > 0u
+ /*统计任务的初始化 */
+ /*目的是获取系统空闲计数的最大值,该函数在用户任务中被调用，这函数在一直过程中命名为TaskStart，优先级是0，在一直部分可以看到*/
+ /*这是系统没有运行其他任务，统计任务初始化函数将自己阻塞2个时钟周期，在系统时钟中断2次后，有调度器恢复运行，叫做时钟同步*/
+ void  OSStatInit(void)
+ {
+     OSTimeDly(2u);								/*延时两个时钟周期，目的是与时钟同步 */
+     OS_ENTER_CRITICAL();
+     OSIdleCtr = 0uL;							/*空闲计数器清0*/
+     OS_EXIT_CRITICAL();
+     OSTimeDly(OS_TICKS_PER_SEC / 10u);			/*延时100ms，此时空闲任务一直OSIdleCtr++*/
+     OS_ENTER_CRITICAL();
+     OSIdleCtrMax = OSIdleCtr;					/*获取最大空闲计数值*/
+     OSStatRdy = OS_TRUE;						/*统计任务准备状态OK */
+     OS_EXIT_CRITICAL();
+ }
+#endif
+
+#if OS_TASK_STAT_EN > 0u
+ /*统计任务代码 */
+ void  OS_TaskStat(void* p_arg)
+ {
+     {
+         p_arg = p_arg;									/*防止编译报错*/
+         while (OSStatRdy == OS_FALSE)					/*统计任务没准备好*/
+         {
+             OSTimeDly(2u * OS_TICKS_PER_SEC / 10u);		/*延时0.2s，等她准备好*/
+         }
+         OSIdleCtrMax /= 100uL;
+         if (OSIdleCtrMax == 0uL)						/*计数太少了，证明系统比较忙 */
+         {
+             OSCPUUsage = 0u;
+#if OS_TASK_SUSPEND_EN > 0u
+             (void)OSTaskSuspend(OS_PRIO_SELF);			/*挂起自己 */
+#else
+             for (;;)
+             {
+                 OSTimeDly(OS_TICKS_PER_SEC);
+             }
+#endif
+         }
+         for (;;)
+         {
+             OS_ENTER_CRITICAL();
+             OSIdleCtrRun = OSIdleCtr;					/*获取过去100ms的空闲计数 */
+             OSIdleCtr = 0uL;							/*清空闲计数*/
+             OS_EXIT_CRITICAL();
+             OSCPUUsage = (INT8U)(100uL - OSIdleCtrRun / OSIdleCtrMax);
+             OSTaskStatHook();							/*钩子函数 */
+#if (OS_TASK_STAT_STK_CHK_EN > 0u) && (OS_TASK_CREATE_EXT_EN > 0u)
+             OS_TaskStatStkChk();						/*堆栈检查 */
+#endif
+             OSTimeDly(OS_TICKS_PER_SEC / 10u);			/*延时0.1s，为了下一个100ms累计OSIdleCtr */
+         }
+     }
+ }
+#endif
+
+ /*进入中断 */
+ void  OSIntEnter(void)
+ {
+     if (OSRunning == OS_TRUE)
+     {
+         if (OSIntNesting < 255u)
+         {
+             OSIntNesting++;/*中断嵌套数+1 */
+         }
+     }
+ }
+
+ /*时钟中断服务函数 */
+ void OSTickISRuser()
+ {
+     OSTime++;
+     if (!FlagEn)/*当前中断被屏蔽或者处于临界区*/
+     {
+         return;
+     }
+     //SuspendThread(mainhandle);/*中止主线程运行，模拟中断产生*/
+     //GetThreadContext(mainhandle, &Context);/*获取主线程的上下文*/
+     OSIntEnter();/*嵌套数+1*/
+     //OSTCBCur->OSTCBStkPtr = (OS_STK*)Context.Esp;/*把当前任务的堆栈地址存到任务控制块*/
+     OSTimeTick();/*找到优先级最高的任务*/
+     OSIntExit();/*嵌套数-1*/
+     //ResumeThread(mainhandle);/*主线程继续执行，模拟中断返回*/
+ }
+
+
+
+ /*事件等待表初始化，也就是清一下ECB中的等待组+表 */
+#if (OS_EVENT_EN)
+ void  OS_EventWaitListInit(OS_EVENT* pevent)
+ {
+     INT8U  i;
+     pevent->OSEventGrp = 0u;						/*清事件等待组 */
+     for (i = 0u; i < OS_EVENT_TBL_SIZE; i++)		/*清事件等待表 */
+     {
+         pevent->OSEventTbl[i] = 0u;
+     }
+ }
+#endif
+
+
+ /*设置事件等待函数，将任务在ECB中登记的函数，把任务在就绪组表中取消 */
+#if (OS_EVENT_EN)
+ void  OS_EventTaskWait(OS_EVENT* pevent)
+ {
+     INT8U  y;
+     OSTCBCur->OSTCBEventPtr = pevent;						/*让任务控制块的指针指向事件控制块，这样就可以直接调用TCB来控制ECB了 */
+     pevent->OSEventTbl[OSTCBCur->OSTCBY] |= OSTCBCur->OSTCBBitX;		/*ECB等待表中添加任务优先级编号 */
+     pevent->OSEventGrp |= OSTCBCur->OSTCBBitY;		/*ECB等待组中添加任务优先级编号 */
+     y = OSTCBCur->OSTCBY;									/*任务等待事件后需要阻塞当前任务，处理一下就绪表和就绪组 */
+     OSRdyTbl[y] &= (OS_PRIO)~OSTCBCur->OSTCBBitX;
+     if (OSRdyTbl[y] == 0u)
+     {
+         OSRdyGrp &= (OS_PRIO)~OSTCBCur->OSTCBBitY;
+     }
+ }
+#endif
+
+
+
+
+ /*将等待事件的任务就绪 */
+#if (OS_EVENT_EN)
+ INT8U  OS_EventTaskRdy(OS_EVENT* pevent,				/*ECB的指针 */
+     void* pmsg,				/*消息指针 */
+     INT8U      msk,					/*清除状态位的掩码 */
+     INT8U      pend_stat)			/*等待(pend)结束 */
+ {
+     OS_TCB* ptcb;
+     INT8U     y;
+     INT8U     x;
+     INT8U     prio;
+#if OS_LOWEST_PRIO > 63u
+     OS_PRIO* ptbl;
+#endif
+#if OS_LOWEST_PRIO <= 63u
+     y = OSUnMapTbl[pevent->OSEventGrp];
+     x = OSUnMapTbl[pevent->OSEventTbl[y]];
+     prio = (INT8U)((y << 3u) + x);						/*根据事件等待组和表，找到正在等待事件的任务中最高优先级的 */
+#else
+     if ((pevent->OSEventGrp & 0xFFu) != 0u)				/* Find HPT waiting for message*/
+     {
+         y = OSUnMapTbl[pevent->OSEventGrp & 0xFFu];
+     }
+     else
+     {
+         y = OSUnMapTbl[(OS_PRIO)(pevent->OSEventGrp >> 8u) & 0xFFu] + 8u;
+     }
+     ptbl = &pevent->OSEventTbl[y];
+     if ((*ptbl & 0xFFu) != 0u)
+     {
+         x = OSUnMapTbl[*ptbl & 0xFFu];
+     }
+     else
+     {
+         x = OSUnMapTbl[(OS_PRIO)(*ptbl >> 8u) & 0xFFu] + 8u;
+     }
+     prio = (INT8U)((y << 4u) + x);						/* Find priority of task getting the msg       */
+#endif
+     ptcb = OSTCBPrioTbl[prio];		/*找到任务控制块 */
+     ptcb->OSTCBDly = 0u;						/*延时时间清0，如果不是0每个时钟周期会--，会产生冲突 */
+#if ((OS_Q_EN > 0u) && (OS_MAX_QS > 0u)) || (OS_MBOX_EN > 0u)
+     ptcb->OSTCBMsg = pmsg;						/*TCB中指针指向ECB */
+#else
+     pmsg = pmsg;
+#endif
+     ptcb->OSTCBStat &= (INT8U)~msk;				/*清除任务控制块的任务状态标志 */
+     ptcb->OSTCBStatPend = pend_stat;					/*设置等待状态 */
+                                                         /* See if task is ready (could be susp'd)      */
+     if ((ptcb->OSTCBStat & OS_STAT_SUSPEND) == OS_STAT_RDY)			/*如果任务没有挂起 */
+     {
+         OSRdyGrp |= ptcb->OSTCBBitY;			/*把任务就绪了 */
+         OSRdyTbl[y] |= ptcb->OSTCBBitX;
+     }
+     OS_EventTaskRemove(ptcb, pevent);					/*事件等待表和组中删除该任务 */
+#if (OS_EVENT_MULTI_EN > 0u)
+     if (ptcb->OSTCBEventMultiPtr != (OS_EVENT**)0)		/* Remove this task from events' wait lists    */
+     {
+         OS_EventTaskRemoveMulti(ptcb, ptcb->OSTCBEventMultiPtr);
+         ptcb->OSTCBEventPtr = (OS_EVENT*)pevent;/* Return event as first multi-pend event ready */
+     }
+#endif
+     return (prio);
+ }
+#endif
+
+

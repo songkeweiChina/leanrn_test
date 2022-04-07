@@ -1032,6 +1032,7 @@ void  OS_Dummy (void)
 * Note       : This function is INTERNAL to uC/OS-II and your application should not call it.
 *********************************************************************************************************
 */
+
 /*将等待事件的任务就绪*/
 #if (OS_EVENT_EN)
 INT8U  OS_EventTaskRdy (OS_EVENT  *pevent,				/*ECB的指针*/
@@ -1096,6 +1097,7 @@ INT8U  OS_EventTaskRdy (OS_EVENT  *pevent,				/*ECB的指针*/
     return (prio);
 }
 #endif
+
 /*$PAGE*/
 /*
 *********************************************************************************************************
@@ -1280,6 +1282,7 @@ void  OS_EventWaitListInit (OS_EVENT *pevent)
 * Returns    : none
 *********************************************************************************************************
 */
+
 /*初始化空闲事件列表*/
 static  void  OS_InitEventList (void)
 {
@@ -1318,6 +1321,7 @@ static  void  OS_InitEventList (void)
 #endif
 #endif
 }
+
 /*$PAGE*/
 /*
 *********************************************************************************************************

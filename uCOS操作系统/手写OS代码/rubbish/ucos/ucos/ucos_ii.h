@@ -265,6 +265,16 @@ typedef struct os_tcb
 
 
 
+
+
+
+
+
+
+
+
+
+
 extern  OS_TCB       OSTCBTbl[OS_MAX_TASKS + OS_N_SYS_TASKS];		    /*任务控制块的结构体数组，实体化一共有多少任务控制块 */
 
 extern  OS_TCB*      OSTCBFreeList;                  				    /*指向空闲任务控制块链表 */
@@ -299,6 +309,17 @@ extern  OS_TCB*           OSTCBHighRdy;             /*最高优先级的任务�
 extern OS_EVENT*          OSEventFreeList;          /*事件空闲链表指针 *//* Pointer to list of free EVENT control blocks    */
 extern OS_EVENT           OSEventTbl[OS_MAX_EVENTS];/*事件控制块的实体 *//* Table of EVENT control blocks                   */
 #endif
+#if OS_TASK_STAT_EN > 0u
+extern INT8U             OSCPUUsage;               /*CPU使用率 */						/* Percentage of CPU used                          */
+extern INT32U            OSIdleCtrMax;             /*最大空闲计数值 */					/* Max. value that idle ctr can take in 1 sec.     */
+extern INT32U            OSIdleCtrRun;             /*1秒内空闲计数值 */					/* Val. reached by idle ctr at run time in 1 sec.  */
+extern INT8U             OSStatRdy;                /*统计任务准备状态 */				/* Flag indicating that the statistic task is rdy  */
+extern OS_STK            OSTaskStatStk[OS_TASK_STAT_STK_SIZE];      /*统计任务栈 */		/* Statistics task stack          */
+#endif
+extern INT8U             FlagEn;                   /*是否在临界区 */
+
+
+
 
 
 
@@ -400,3 +421,30 @@ extern void OSIntCtxSw(void);/*切换任务*/
 extern void  OSStart(void);/*启动多任务 */
 extern void OSStartHighRdy(void);/*启动多任务 */
 extern void OSTaskSwHook(void);/*钩子函数 */
+extern void  OS_TaskIdle(void* p_arg); /*空闲任务 */
+extern void  OSTaskIdleHook(void);/*钩子函数 */
+extern void  OSTimeDly(INT32U ticks);  /*任务延时函数 */
+#if OS_TASK_STAT_EN > 0u
+extern void  OSStatInit(void); /*统计任务的初始化 */
+#endif
+#if OS_TASK_STAT_EN > 0u
+extern void          OS_TaskStat(void* p_arg);			/*统计任务代码*/
+#endif
+extern void OSTaskStatHook();/*钩子函数 */
+extern void OSIntEnter(void);/*进入中断 */
+extern void OSTickISRuser();  /*时钟中断服务函数*/
+#if OS_TIME_GET_SET_EN > 0u
+extern INT32U  OSTimeGet(void);/*获取当前时间 */
+#endif
+#if OS_TIME_DLY_HMSM_EN > 0u
+extern INT8U  OSTimeDlyHMSM(INT8U   hours, INT8U   minutes, INT8U   seconds, INT16U  ms);/*任务按秒延迟函数*/
+#endif
+#if OS_TIME_DLY_RESUME_EN > 0u
+extern INT8U  OSTimeDlyResume(INT8U prio);/*延时恢复函数*/
+#endif
+#if (OS_EVENT_EN)
+extern void  OS_EventWaitListInit(OS_EVENT* pevent); /*事件等待表初始化，也就是清一下ECB中的等待组+表 */
+#endif
+#if (OS_EVENT_EN)
+extern void  OS_EventTaskWait(OS_EVENT* pevent); /*设置事件等待函数，将任务在ECB中登记的函数，把任务在就绪组表中取消 */
+#endif

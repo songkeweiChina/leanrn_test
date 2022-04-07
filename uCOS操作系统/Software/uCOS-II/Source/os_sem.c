@@ -90,6 +90,7 @@ INT16U  OSSemAccept (OS_EVENT *pevent)
 *              == (void *)0  if no event control blocks were available
 *********************************************************************************************************
 */
+
 /*创建一个信号量*/
 OS_EVENT  *OSSemCreate (INT16U cnt)
 {

@@ -1,5 +1,6 @@
----- OSStart Matches (4 in 2 files) ----
-Os_core.c (ucos-ii\source):*              creating any uC/OS-II object and, prior to calling OSStart().
-Os_core.c (ucos-ii\source):*              task that you have created.  Before you can call OSStart(), you MUST have called OSInit()
-Os_core.c (ucos-ii\source):void  OSStart (void)
-Ucos_ii.h (ucos-ii\source):void          OSStart                 (void);
+---- OSSemCreate Matches (5 in 4 files) ----
+Os_sem.c (ucos-ii\source):OS_EVENT  *OSSemCreate (INT16U cnt)
+Os_tmr.c (ucos-ii\source):    OSTmrSem            = OSSemCreate(1u);
+Os_tmr.c (ucos-ii\source):    OSTmrSemSignal      = OSSemCreate(0u);
+Ucos_ii.h (ucos-ii\source):OS_EVENT     *OSSemCreate             (INT16U           cnt);
+User.c (ucos-ii\source):	MyEventSem = OSSemCreate(2);
