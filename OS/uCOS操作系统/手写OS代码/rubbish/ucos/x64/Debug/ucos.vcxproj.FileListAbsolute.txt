@@ -1,0 +1,3 @@
+C:\Users\kewei.song\Desktop\rubbish\ucos\x64\Debug\ucos.exe
+C:\Users\kewei.song\Documents\Virtual Machines\public\leanrn_test\uCOS操作系统\手写OS代码\rubbish\ucos\x64\Debug\ucos.exe
+C:\Users\kewei.song\Documents\Virtual Machines\public\leanrn_test\OS\uCOS操作系统\手写OS代码\rubbish\ucos\x64\Debug\ucos.exe
