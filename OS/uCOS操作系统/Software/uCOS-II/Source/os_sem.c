@@ -44,6 +44,7 @@
 *                         if you didn't pass a pointer to a semaphore
 *********************************************************************************************************
 */
+
 /*无等待的信号量，就是说申请到信号量就拿，申请不到也不阻塞自己，继续往下执行*/
 #if OS_SEM_ACCEPT_EN > 0u
 INT16U  OSSemAccept (OS_EVENT *pevent)
@@ -164,6 +165,7 @@ OS_EVENT  *OSSemCreate (INT16U cnt)
 *                 will no longer be guarded by the semaphore.
 *********************************************************************************************************
 */
+
 /*删除一个信号量/消息*/
 #if OS_SEM_DEL_EN > 0u
 OS_EVENT  *OSSemDel (OS_EVENT  *pevent,						/*ECB地址*/
@@ -295,6 +297,7 @@ OS_EVENT  *OSSemDel (OS_EVENT  *pevent,						/*ECB地址*/
 * Returns    : none
 *********************************************************************************************************
 */
+
 /*请求一个信号量，等待一个信号量，也就是任务申请一把钥匙*/
 void  OSSemPend (OS_EVENT  *pevent,						/*ECB地址*/
                  INT32U     timeout,					/*设定的超时时间*/
@@ -404,6 +407,7 @@ void  OSSemPend (OS_EVENT  *pevent,						/*ECB地址*/
 *              >  0          if one or more tasks waiting on the semaphore are now readied and informed.
 *********************************************************************************************************
 */
+
 /*放弃其他任务等待信号量*/
 #if OS_SEM_PEND_ABORT_EN > 0u
 INT8U  OSSemPendAbort (OS_EVENT  *pevent,					/*ECB地址*/
@@ -481,6 +485,7 @@ INT8U  OSSemPendAbort (OS_EVENT  *pevent,					/*ECB地址*/
 *              OS_ERR_PEVENT_NULL  If 'pevent' is a NULL pointer.
 *********************************************************************************************************
 */
+
 /*提交一个信号量，发出一个信号量，也就是申请完钥匙还回去*/
 INT8U  OSSemPost (OS_EVENT *pevent)
 {
@@ -597,6 +602,7 @@ INT8U  OSSemQuery (OS_EVENT     *pevent,
 *                            OS_ERR_TASK_WAITING  If tasks are waiting on the semaphore.
 *********************************************************************************************************
 */
+
 /*直接设置信号量的值*/
 #if OS_SEM_SET_EN > 0u
 void  OSSemSet (OS_EVENT  *pevent,

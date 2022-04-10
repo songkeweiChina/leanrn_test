@@ -1,6 +1,10 @@
----- OSSemCreate Matches (5 in 4 files) ----
-Os_sem.c (ucos-ii\source):OS_EVENT  *OSSemCreate (INT16U cnt)
-Os_tmr.c (ucos-ii\source):    OSTmrSem            = OSSemCreate(1u);
-Os_tmr.c (ucos-ii\source):    OSTmrSemSignal      = OSSemCreate(0u);
-Ucos_ii.h (ucos-ii\source):OS_EVENT     *OSSemCreate             (INT16U           cnt);
-User.c (ucos-ii\source):	MyEventSem = OSSemCreate(2);
+---- OSSemPend Matches (9 in 4 files) ----
+Os_sem.c (ucos-ii\source):*              occurred.  Unlike OSSemPend(), OSSemAccept() does not suspend the calling task if the
+Os_sem.c (ucos-ii\source):*                 the semaphore MUST check the return code of OSSemPend().
+Os_sem.c (ucos-ii\source):void  OSSemPend (OS_EVENT  *pevent,						/*ECBµÿ÷∑*/
+Os_sem.c (ucos-ii\source):*                                  OSSemAccept() or OSSemPend().
+Os_tmr.c (ucos-ii\source):        OSSemPend(OSTmrSemSignal, 0u, &err);                     /* Wait for signal indicating time to update timers  */
+Ucos_ii.h (ucos-ii\source):void          OSSemPend               (OS_EVENT        *pevent,
+User.c (ucos-ii\source):		OSSemPend(MyEventSem,0,perr);
+User.c (ucos-ii\source):		OSSemPend(MyEventSem,0,perr);
+User.c (ucos-ii\source):		OSSemPend(MyEventSem,0,perr);

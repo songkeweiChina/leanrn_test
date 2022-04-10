@@ -449,3 +449,29 @@ extern void  OS_EventWaitListInit(OS_EVENT* pevent); /*事件等待表初始化�
 extern void  OS_EventTaskWait(OS_EVENT* pevent); /*设置事件等待函数，将任务在ECB中登记的函数，把任务在就绪组表中取消 */
 #endif
 extern OS_EVENT* OSSemCreate(INT16U cnt); /*创建一个信号量 */
+ /*删除一个信号量/消息 */
+#if OS_SEM_DEL_EN > 0u
+extern OS_EVENT* OSSemDel(OS_EVENT* pevent,						/*ECB地址 */
+    INT8U      opt,						/*删除选项 */
+    INT8U* perr);						/*返回值 */
+#endif
+ /*请求一个信号量，等待一个信号量，也就是任务申请一把钥匙 */
+extern void  OSSemPend(OS_EVENT* pevent,						/*ECB地址 */
+    INT32U     timeout,					/*设定的超时时间 */
+    INT8U* perr);
+extern INT8U  OSSemPost(OS_EVENT* pevent);/*提交一个信号量，发出一个信号量，也就是申请完钥匙还回去 */
+#if OS_SEM_ACCEPT_EN > 0u
+extern INT16U  OSSemAccept(OS_EVENT* pevent); /*无等待的信号量，就是说申请到信号量就拿，申请不到也不阻塞自己，继续往下执行 */
+#endif
+ /*放弃其他任务等待该信号量 */
+#if OS_SEM_PEND_ABORT_EN > 0u
+extern INT8U  OSSemPendAbort(OS_EVENT* pevent,					/*ECB地址 */
+    INT8U      opt,						/*参数 */
+    INT8U* perr);						/*返回值 */
+#endif
+ /*直接设置信号量的值 */
+#if OS_SEM_SET_EN > 0u
+extern void  OSSemSet(OS_EVENT* pevent,
+    INT16U     cnt,							/*要设置信号量的值 */
+    INT8U* perr);
+#endif

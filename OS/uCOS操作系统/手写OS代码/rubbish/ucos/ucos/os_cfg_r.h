@@ -8,7 +8,6 @@ typedef unsigned char INT8U;
 #define OS_TASK_CREATE_EXT_EN     0u   /*是否使用扩展功能 */
 #define OS_Q_EN                   1u   /*使用队列 */
 #define OS_MBOX_EN                1u   /*是否使用邮箱 */
-#define OS_SEM_EN                 1u   /*是否使用信号量 */
 #define OS_MUTEX_EN               1u   /*是否使用互斥锁 */
 #define OS_EVENT_MULTI_EN         1u   /*允许任务等待多事件 *//* Include code for OSEventPendMulti()                          */
 #define OS_FLAG_EN                1u   /*使用事件的标志 */
@@ -65,3 +64,17 @@ typedef unsigned char INT8U;
 #define OS_TASK_IDLE_STK_SIZE   128u   /* Idle       task stack size (# of OS_STK wide entries)        */
 #define OS_TICK_STEP_EN           0u   /* Enable tick stepping feature for uC/OS-View                  */
 #define OS_TICKS_PER_SEC        100u   /*每秒时钟中断发生的次数 *//* Set the number of ticks in one second                        */
+
+                                       /* ------------------------ SEMAPHORES ------------------------ */
+#define OS_SEM_EN                 1u   /*是否使用信号量*/
+#define OS_SEM_ACCEPT_EN          1u   /*    Include code for OSSemAccept()                            */
+#define OS_SEM_DEL_EN             1u   /*    Include code for OSSemDel()                               */
+#define OS_SEM_PEND_ABORT_EN      1u   /*    Include code for OSSemPendAbort()                         */
+#define OS_SEM_QUERY_EN           1u   /*    Include code for OSSemQuery()                             */
+#define OS_SEM_SET_EN             1u   /*    Include code for OSSemSet()                               */
+
+#define  OS_DEL_NO_PEND                 0u/*有任务等信号量就不能删除信号量 */
+#define  OS_DEL_ALWAYS                  1u/*强制删除信号量，不管有没有任务在等 */
+
+#define  OS_PEND_OPT_NONE               0u  /*只让最高优先级的退出等待 *//* NO option selected                                      */
+#define  OS_PEND_OPT_BROADCAST          1u  /*让所有的任务退出等待 *//* Broadcast action to ALL tasks waiting                   */

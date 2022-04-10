@@ -103,6 +103,37 @@ INT8U  OS_EventTaskRdy(OS_EVENT* pevent,				/*ECB的指针 */
     INT8U      pend_stat);			/*等待(pend)结束 */
 #endif
 OS_EVENT* OSSemCreate(INT16U cnt); /*创建一个信号量 */
+ /*删除一个信号量/消息 */
+#if OS_SEM_DEL_EN > 0u
+OS_EVENT* OSSemDel(OS_EVENT* pevent,						/*ECB地址 */
+    INT8U      opt,						/*删除选项 */
+    INT8U* perr);						/*返回值 */
+#endif
+ /*请求一个信号量，等待一个信号量，也就是任务申请一把钥匙 */
+void  OSSemPend(OS_EVENT* pevent,						/*ECB地址 */
+    INT32U     timeout,					/*设定的超时时间 */
+    INT8U* perr);
+INT8U  OSSemPost(OS_EVENT* pevent);/*提交一个信号量，发出一个信号量，也就是申请完钥匙还回去 */
+#if OS_SEM_ACCEPT_EN > 0u
+INT16U  OSSemAccept(OS_EVENT* pevent); /*无等待的信号量，就是说申请到信号量就拿，申请不到也不阻塞自己，继续往下执行 */
+#endif
+ /*放弃其他任务等待该信号量 */
+#if OS_SEM_PEND_ABORT_EN > 0u
+INT8U  OSSemPendAbort(OS_EVENT* pevent,					/*ECB地址 */
+    INT8U      opt,						/*参数 */
+    INT8U* perr);						/*返回值 */
+#endif
+ /*直接设置信号量的值 */
+#if OS_SEM_SET_EN > 0u
+void  OSSemSet(OS_EVENT* pevent,
+    INT16U     cnt,							/*要设置信号量的值 */
+    INT8U* perr);
+#endif
+
+
+
+
+
 
 
 
@@ -930,3 +961,317 @@ void  OSTimeTick(void)
      }
      return (pevent);
  }
+
+
+ /*删除一个信号量/消息 */
+#if OS_SEM_DEL_EN > 0u
+ OS_EVENT* OSSemDel(OS_EVENT* pevent,						/*ECB地址 */
+     INT8U      opt,						/*删除选项 */
+     INT8U* perr)						/*返回值 */
+ {
+     INT8U    tasks_waiting;								/*有没有任务在等信号量 */
+     OS_EVENT* pevent_return;
+
+#if OS_ARG_CHK_EN > 0u
+     if (pevent == (OS_EVENT*)0)							/*如果ECB不存在 */
+     {
+         *perr = OS_ERR_PEVENT_NULL;
+         return (pevent);
+     }
+#endif
+     if (pevent->OSEventType != OS_EVENT_TYPE_SEM)			/*如果类型不符合 */
+     {
+         *perr = OS_ERR_EVENT_TYPE;
+         return (pevent);
+     }
+     if (OSIntNesting > 0u)									/*如果在中断中 */
+     {
+         *perr = OS_ERR_DEL_ISR;
+         return (pevent);
+     }
+     OS_ENTER_CRITICAL();
+     if (pevent->OSEventGrp != 0u)							/*等待组不是0，表示有任务在等这信号量 */
+     {
+         tasks_waiting = OS_TRUE;
+     }
+     else
+     {
+         tasks_waiting = OS_FALSE;
+     }
+     switch (opt)
+     {
+     case OS_DEL_NO_PEND:								/*有任务等信号量就不能删除的情况 */
+         if (tasks_waiting == OS_FALSE)
+         {
+#if OS_EVENT_NAME_EN > 0u
+             pevent->OSEventName = (INT8U*)(void*)"?";
+#endif
+             pevent->OSEventType = OS_EVENT_TYPE_UNUSED;
+             pevent->OSEventPtr = OSEventFreeList;
+             pevent->OSEventCnt = 0u;
+             OSEventFreeList = pevent;			/*上面是删除信号量后配置的ECB */
+             OS_EXIT_CRITICAL();
+             *perr = OS_ERR_NONE;
+             pevent_return = (OS_EVENT*)0;	/*删除成功返回空指针 */
+         }
+         else
+         {
+             OS_EXIT_CRITICAL();
+             *perr = OS_ERR_TASK_WAITING;
+             pevent_return = pevent;			/*删除失败，返回当前ECB */
+         }
+         break;
+
+     case OS_DEL_ALWAYS:									/*强制删除的情况 */
+         while (pevent->OSEventGrp != 0u)				/*有任务在等信号量 */
+         {
+             (void)OS_EventTaskRdy(pevent, (void*)0, OS_STAT_SEM, OS_STAT_PEND_OK);		/*把等信号量的任务就绪 */
+         }
+#if OS_EVENT_NAME_EN > 0u
+         pevent->OSEventName = (INT8U*)(void*)"?";
+#endif
+         pevent->OSEventType = OS_EVENT_TYPE_UNUSED;
+         pevent->OSEventPtr = OSEventFreeList;
+         pevent->OSEventCnt = 0u;
+         OSEventFreeList = pevent;				/*上面是删除信号量后配置的ECB */
+         OS_EXIT_CRITICAL();
+         if (tasks_waiting == OS_TRUE)					/*恢复任务后，有任务就绪了 */
+         {
+             OS_Sched();								/*调度一下 */
+         }
+         *perr = OS_ERR_NONE;
+         pevent_return = (OS_EVENT*)0;		/*删除成功返回空指针 */
+         break;
+
+     default:											/*传的删除选项opt无效 */
+         OS_EXIT_CRITICAL();
+         *perr = OS_ERR_INVALID_OPT;
+         pevent_return = pevent;
+         break;
+     }
+     return (pevent_return);
+ }
+#endif
+
+
+ /*请求一个信号量，等待一个信号量，也就是任务申请一把钥匙 */
+ void  OSSemPend(OS_EVENT* pevent,						/*ECB地址 */
+     INT32U     timeout,					/*设定的超时时间 */
+     INT8U* perr)
+ {
+#if OS_ARG_CHK_EN > 0u
+     if (pevent == (OS_EVENT*)0)						/*ECB地址为空 */
+     {
+         *perr = OS_ERR_PEVENT_NULL;
+         return;
+     }
+#endif
+     if (pevent->OSEventType != OS_EVENT_TYPE_SEM)		/*类型无效 */
+     {
+         *perr = OS_ERR_EVENT_TYPE;
+         return;
+     }
+     if (OSIntNesting > 0u)								/*中断里不可以 */
+     {
+         *perr = OS_ERR_PEND_ISR;
+         return;
+     }
+     if (OSLockNesting > 0u)								/*调度器上锁了 */
+     {
+         *perr = OS_ERR_PEND_LOCKED;
+         return;
+     }
+     OS_ENTER_CRITICAL();
+     if (pevent->OSEventCnt > 0u)						/*信号量的值必须大于0 */
+     {
+         pevent->OSEventCnt--;							/*拿走一个信号量 */
+         OS_EXIT_CRITICAL();
+         *perr = OS_ERR_NONE;
+         return;											/*成功请求到信号量了 */
+     }
+     /*当前没有信号量了，就的等待 */
+     OSTCBCur->OSTCBStat |= OS_STAT_SEM;				/*在当前控制块中打上等待信号量的标记 */
+     OSTCBCur->OSTCBStatPend = OS_STAT_PEND_OK;			/*等待状态赋值 */
+     OSTCBCur->OSTCBDly = timeout;					/*超时时间赋上 */
+     OS_EventTaskWait(pevent);							/*让任务等，在ECB中打标记，在就绪组&表中取消就绪的标记 */
+     OS_EXIT_CRITICAL();
+     OS_Sched();											/*调度一下 */
+     OS_ENTER_CRITICAL();
+     switch (OSTCBCur->OSTCBStatPend)					/*OS_Sched函数把任务切走了，这是回来的时候 */
+     {
+     case OS_STAT_PEND_OK:							/*事件发生了 */
+         *perr = OS_ERR_NONE;
+         break;
+     case OS_STAT_PEND_ABORT:						/*事件超时了 */
+         *perr = OS_ERR_PEND_ABORT;
+         break;
+     case OS_STAT_PEND_TO:
+     default:
+         OS_EventTaskRemove(OSTCBCur, pevent);		/*自己调函数清除ECB中的等待事件组表中的标志 */
+         *perr = OS_ERR_TIMEOUT;
+         break;
+     }
+     /*处理一下TCB */
+     OSTCBCur->OSTCBStat = OS_STAT_RDY;
+     OSTCBCur->OSTCBStatPend = OS_STAT_PEND_OK;
+     OSTCBCur->OSTCBEventPtr = (OS_EVENT*)0;
+#if (OS_EVENT_MULTI_EN > 0u)
+     OSTCBCur->OSTCBEventMultiPtr = (OS_EVENT**)0;
+#endif
+     OS_EXIT_CRITICAL();
+ }
+
+
+
+
+ /*提交一个信号量，发出一个信号量，也就是申请完钥匙还回去 */
+ INT8U  OSSemPost(OS_EVENT* pevent)
+ {
+#if OS_ARG_CHK_EN > 0u
+     if (pevent == (OS_EVENT*)0)						/*ECB无效 */
+     {
+         return (OS_ERR_PEVENT_NULL);
+     }
+#endif
+     if (pevent->OSEventType != OS_EVENT_TYPE_SEM)		/*ECB类型无效 */
+     {
+         return (OS_ERR_EVENT_TYPE);
+     }
+     OS_ENTER_CRITICAL();
+     if (pevent->OSEventGrp != 0u)						/*有任务在等信号量 */
+     {
+         (void)OS_EventTaskRdy(pevent, (void*)0, OS_STAT_SEM, OS_STAT_PEND_OK);			/*把任务就绪 */
+         OS_EXIT_CRITICAL();
+         OS_Sched();										/*调度一下 */
+         return (OS_ERR_NONE);
+     }
+     if (pevent->OSEventCnt < 65535u)					/*如果信号量没超限制 */
+     {
+         pevent->OSEventCnt++;							/*把信号量还回去 */
+         OS_EXIT_CRITICAL();
+         return (OS_ERR_NONE);
+     }
+     OS_EXIT_CRITICAL();
+     return (OS_ERR_SEM_OVF);
+ }
+
+
+
+ /*无等待的信号量，就是说申请到信号量就拿，申请不到也不阻塞自己，继续往下执行 */
+#if OS_SEM_ACCEPT_EN > 0u
+ INT16U  OSSemAccept(OS_EVENT* pevent)
+ {
+     INT16U     cnt;
+#if OS_ARG_CHK_EN > 0u
+     if (pevent == (OS_EVENT*)0)						/*ECB地址无效 */
+     {
+         return (0u);
+     }
+#endif
+     if (pevent->OSEventType != OS_EVENT_TYPE_SEM)	/*格式不是信号量 */
+     {
+         return (0u);
+     }
+     OS_ENTER_CRITICAL();
+     cnt = pevent->OSEventCnt;
+     if (cnt > 0u)									/*有信号量就--。没有拉倒 */
+     {
+         pevent->OSEventCnt--;
+     }
+     OS_EXIT_CRITICAL();
+     return (cnt);									/*返回信号量值 */
+ }
+#endif
+
+
+
+ /*放弃其他任务等待该信号量 */
+#if OS_SEM_PEND_ABORT_EN > 0u
+ INT8U  OSSemPendAbort(OS_EVENT* pevent,					/*ECB地址 */
+     INT8U      opt,						/*参数 */
+     INT8U* perr)						/*返回值 */
+ {
+     INT8U      nbr_tasks;
+#if OS_ARG_CHK_EN > 0u
+     if (pevent == (OS_EVENT*)0)
+     {
+         *perr = OS_ERR_PEVENT_NULL;
+         return (0u);
+     }
+#endif
+     if (pevent->OSEventType != OS_EVENT_TYPE_SEM)			/* Validate event block type                     */
+     {
+         *perr = OS_ERR_EVENT_TYPE;
+         return (0u);
+     }
+     OS_ENTER_CRITICAL();
+     if (pevent->OSEventGrp != 0u)							/*如果有任务等信号量 */
+     {
+         nbr_tasks = 0u;
+         switch (opt)
+         {
+         case OS_PEND_OPT_BROADCAST:						/*让所有的任务退出等待 */
+             while (pevent->OSEventGrp != 0u)
+             {
+                 (void)OS_EventTaskRdy(pevent, (void*)0, OS_STAT_SEM, OS_STAT_PEND_ABORT);
+                 nbr_tasks++;
+             }
+             break;
+         case OS_PEND_OPT_NONE:							/*只让最高优先级的退出等待 */
+         default:
+             (void)OS_EventTaskRdy(pevent, (void*)0, OS_STAT_SEM, OS_STAT_PEND_ABORT);
+             nbr_tasks++;
+             break;
+         }
+         OS_EXIT_CRITICAL();
+         OS_Sched();											/*调度一下 */
+         *perr = OS_ERR_PEND_ABORT;
+         return (nbr_tasks);
+     }
+     OS_EXIT_CRITICAL();
+     *perr = OS_ERR_NONE;
+     return (0u);
+ }
+#endif
+
+
+
+ /*直接设置信号量的值 */
+#if OS_SEM_SET_EN > 0u
+ void  OSSemSet(OS_EVENT* pevent,
+     INT16U     cnt,							/*要设置信号量的值 */
+     INT8U* perr)
+ {
+#if OS_ARG_CHK_EN > 0u
+     if (pevent == (OS_EVENT*)0)
+     {
+         *perr = OS_ERR_PEVENT_NULL;
+         return;
+     }
+#endif
+     if (pevent->OSEventType != OS_EVENT_TYPE_SEM)
+     {
+         *perr = OS_ERR_EVENT_TYPE;
+         return;
+     }
+     OS_ENTER_CRITICAL();
+     *perr = OS_ERR_NONE;
+     if (pevent->OSEventCnt > 0u)						/*信号量的值原来就>0 */
+     {
+         pevent->OSEventCnt = cnt;						/*信号量改成新值 */
+     }
+     else
+     {
+         if (pevent->OSEventGrp == 0u)					/*如果没任务等待 */
+         {
+             pevent->OSEventCnt = cnt;					/*信号量改成新值 */
+         }
+         else
+         {
+             *perr = OS_ERR_TASK_WAITING;	/*有任务等待，不允许修改 */
+         }
+     }
+     OS_EXIT_CRITICAL();
+ }
+#endif
+
